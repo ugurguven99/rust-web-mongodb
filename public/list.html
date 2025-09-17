@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-5">Insert New Person</h1>
+    <form id="personForm" autocomplete="on"  class="mb-4">
+        <div class="form-group">
+            <label for="isim">First Name:</label>
+            <input type="text" class="form-control" id="isim" name="isim" placeholder="İsim giriniz" autocomplete="given-name" required>
+        </div>
+        <div class="form-group">
+            <label for="soyisim">Last Name:</label>
+            <input type="text" class="form-control" id="soyisim" name="soyisim" placeholder="Soyisim giriniz" autocomplete="family-name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="example@example.com" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+            <label for="yas">Age:</label>
+            <input type="number" class="form-control" id="yas" name="yas" placeholder="Yaş giriniz" autocomplete="age" required>
+        </div>
+        <button type="button" class="btn btn-primary"  onclick="submitForm()">Submit</button>
+    </form>
+</div>
+
+<div class="container">
+    <h1>Person List</h1>
+    <table class="table table-striped" id="personTable">
+        <thead>
+        <tr>
+            <th>Person ID</th>
+            <th>İsim</th>
+            <th>Soyisim</th>
+            <th>Email</th>
+            <th>Yaş</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Dinamik olarak database tarafından doldurulacak -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="successModalBody">
+                <!-- Success message will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Warning Modal ÇALIŞMIYOR -->
+<div class="modal fade" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="warningModalLabel">Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="warningModalBody">
+                <!-- Success message will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Hata</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="errorModalBody">
+                Kişi ekleme işlemi başarısız. Lütfen gerekli alanları doldurunuz.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Tamam</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Person</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editPersonForm">
+                    <input type="hidden" id="editPersonId">
+                    <div class="form-group">
+                        <label for="editIsim">First Name:</label>
+                        <input type="text" class="form-control" id="editIsim" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSoyisim">Last Name:</label>
+                        <input type="text" class="form-control" id="editSoyisim" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="email" class="form-control" id="editEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editYas">Age:</label>
+                        <input type="number" class="form-control" id="editYas" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="submitEditForm()">Save changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bu kişiyi silmek istediğine emin misin?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    async function submitForm() {
+        const form = document.getElementById('personForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const isim = form.isim.value.trim();
+        const soyisim = form.soyisim.value.trim();
+        const email = form.email.value.trim();
+        const yas = form.yas.value.trim();
+        //çalışmıyor
+        if (!isim || !soyisim || !email || !yas) {
+            showModal("Lütfen tüm alanları doldurunuz!!.",'warningModel');
+        }
+
+        //if (!validateEmail(email)) {
+          //  alert("Geçerli bir e-posta adresi giriniz.");
+            //return false;
+        //}
+
+        const response = await fetch('/add_person', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            showModal('Kişi ekleme başarılı!', 'successModal');
+            form.reset();
+            fetchPersons();
+        } else {
+            showModal('Kişi ekleme başarısız!', 'errorModal');
+        }
+    }
+
+
+    async function fetchPersons() {
+        const response = await fetch('/persons');
+        const persons = await response.json();
+        const tableBody = document.querySelector('#personTable tbody');
+        tableBody.innerHTML = '';
+
+        persons.forEach(person => {
+            const row = document.createElement('tr');
+
+            Object.values(person).forEach(value => {
+                const cell = document.createElement('td');
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+
+            // Actions cell
+            const actionsCell = document.createElement('td');
+
+            // Edit button actions
+            const editBtn = document.createElement('button');
+            editBtn.textContent = 'Edit';
+            editBtn.classList.add('btn', 'btn-success', 'edit-btn');
+            editBtn.onclick = () => showEditModal(person);
+
+            // Delete button actions
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.classList.add('btn', 'btn-danger', 'delete-btn');
+            deleteBtn.onclick = () => showDeleteModal(person.person_id);
+
+            actionsCell.appendChild(editBtn);
+            actionsCell.appendChild(deleteBtn);
+            row.appendChild(actionsCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    function showEditModal(person) {
+        document.getElementById('editPersonId').value = person.person_id;
+        document.getElementById('editIsim').value = person.isim;
+        document.getElementById('editSoyisim').value = person.soyisim;
+        document.getElementById('editEmail').value = person.email;
+        document.getElementById('editYas').value = person.yas;
+        $('#editModal').modal('show');
+    }
+
+    async function submitEditForm() {
+        const id = document.getElementById('editPersonId').value;
+        const isim = document.getElementById('editIsim').value;
+        const soyisim = document.getElementById('editSoyisim').value;
+        const email = document.getElementById('editEmail').value;
+        const yas = document.getElementById('editYas').value;
+
+        const response = await fetch(`/update_person/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ isim, soyisim, email, yas: parseInt(yas, 10) })
+        });
+
+        if (response.ok) {
+            showModal('Kişi güncelleme başarılı!', 'successModal');
+            $('#editModal').modal('hide');
+            fetchPersons();
+        } else {
+            alert('Kişiyi güncelleme işlemi başarısız.');
+        }
+    }
+
+    function showDeleteModal(personId) {
+        $('#deleteModal').modal('show');
+        document.getElementById('confirmDeleteButton').onclick = () => deletePerson(personId);
+    }
+
+    async function deletePerson(id) {
+        const response = await fetch(`/delete_person/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            showModal('Kişi silme başarılı!', 'successModal');
+            $('#deleteModal').modal('hide');
+            fetchPersons();
+        } else {
+            alert('Kisi silme başarısız.');
+        }
+    }
+
+    function showModal(message, modalId) {
+        document.getElementById('successModalBody').textContent = message;
+        $(`#${modalId}`).modal('show');
+    }
+
+    window.onload = fetchPersons;
+</script>
+</body>
+</html>

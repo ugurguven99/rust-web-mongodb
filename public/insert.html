@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Insert Form</title>
+</head>
+<body>
+<h1>Insert New Person</h1>
+<form id="personForm" autocomplete="on">
+    <label for="isim">First Name:</label><br>
+    <input type="text" id="isim" name="isim" autocomplete="given-name" required><br>
+    <label for="soyisim">Last Name:</label><br>
+    <input type="text" id="soyisim" name="soyisim" autocomplete="family-name" required><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" autocomplete="email" required><br>
+    <label for="yas">Age:</label><br>
+    <input type="number" id="yas" name="yas" autocomplete="age" required><br><br>
+    <button type="button" onclick="submitForm()">Submit</button>
+</form>
+
+<script>
+    async function submitForm() {
+            const form = document.getElementById('personForm');
+            const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch('/add_person', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert('Person added successfully!');
+            form.reset();
+        } else {
+            const errorText = await response.text();
+            alert('Failed to add person: ' + errorText);
+        }
+    }
+</script>
+</body>
+</html>
